@@ -47,7 +47,7 @@ defmodule Dialyxir.Dialyzer do
         warnings = Enum.map(result, &color(&1, :red))
         { :warn, @warning_return_code, [ time ] ++ warnings ++ [ @warnings_msg ] }
       { :error, msg } ->
-        { :error, @error_return_code, [ color(msg, :red) ] }
+        { :error, @error_return_code, [ "", color(msg, :red) ] }
     end
   end
 end

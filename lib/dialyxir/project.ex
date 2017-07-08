@@ -1,6 +1,8 @@
 defmodule Dialyxir.Project do
   @moduledoc false
 
+  import Dialyxir.Output, only: [info: 1, error: 1]
+
   def plts_list(deps, include_project \\ true) do
     elixir_apps = [:elixir]
     erlang_apps = [:erts, :kernel, :stdlib, :crypto]
@@ -21,7 +23,7 @@ defmodule Dialyxir.Project do
 
   def check_config do
     if is_binary(dialyzer_config()[:plt_file]) do
-      IO.puts """
+      info """
       Notice: :plt_file is deprecated as Dialyxir now uses project-private PLT files by default.
       If you want to use this setting without seeing this warning, provide it in a pair
       with the :no_warn key e.g. `dialyzer: plt_file: {:no_warn, "~/mypltfile"}`
@@ -186,7 +188,7 @@ defmodule Dialyxir.Project do
       :ok -> nil
       {:error, {:already_loaded, _}} -> nil
       {:error, err} -> nil
-        IO.puts "Error loading #{app}, dependency list may be incomplete.\n #{err}"
+        error "Error loading #{app}, dependency list may be incomplete.\n #{err}"
     end
     case Application.spec(app, :applications) do
       []        -> []
