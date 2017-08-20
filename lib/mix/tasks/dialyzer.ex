@@ -183,9 +183,9 @@ defmodule Mix.Tasks.Dialyzer do
     # It would seem more natural to use Mix.in_project here to start in our parent project.
     # However part of the app.tree resolution includes loading all sub apps, and we will
     # hit an exception when we try to do that for *this* child, which is already loaded.
-    {out, rc} = System.cmd("mix", ["dialyzer", "--plt"], opts)
+    {_, rc} = System.cmd("mix", ["dialyzer", "--plt"], opts)
     if rc != 0 do
-      error("Error building parent PLT, process returned code: #{rc}\n#{out}")
+      error("Error building parent PLT, process returned code: #{rc}\n#")
     end
   end
 
