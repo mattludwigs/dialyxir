@@ -94,7 +94,8 @@ defmodule Mix.Tasks.Dialyzer do
   @command_options [ no_compile: :boolean,
                      no_check: :boolean,
                      halt_exit_status: :boolean,
-                     plt: :boolean ]
+                     plt: :boolean,
+                     runner: :string]
 
   def run(args) do
     check_dialyzer()
@@ -145,10 +146,26 @@ defmodule Mix.Tasks.Dialyzer do
 
     IO.puts "Starting Dialyzer"
     IO.inspect args, label: "dialyzer args"
-    { _, exit_status, result } = Dialyzer.dialyze(args)
+
+    runner = get_runner(opts)
+    IO.inspect runner
+    { _, exit_status, result } = Dialyzer.dialyze(args, runner)
     Enum.each(result, &IO.puts/1)
     if opts[:halt_exit_status], do: :erlang.halt(exit_status)
   end
+
+  defp get_runner(opts) do
+    if Project.runner() == nil do
+      case Keyword.get(opts, :runner) do
+        nil -> Dialyzer.Runner 
+        runner -> runner |> String.to_atom()
+      end
+    else
+      {:module, _} = Code.ensure_compiled(Project.runner())
+      Project.runner()
+    end
+  end
+
 
   defp dialyzer_warnings(dargs) do
     raw_opts = Project.dialyzer_flags() ++ Enum.map(dargs, &elem(&1,0))
